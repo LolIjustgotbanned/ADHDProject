@@ -54,7 +54,13 @@ Notes:
 ## Layout
 
 - `convex/` — schema + all backend functions (the only place data is read or written)
-- `app/` — routes: `/` landing, `/login`, `/app` task list, `/app/focus/[taskId]`, `/app/insights`
+- `app/` — routes: `/` landing, `/app` task list, `/app/focus/[taskId]`, `/app/insights`
 - `components/` — client components (anything using Convex hooks or interactivity)
-- `middleware.ts` — signed-out redirect for `/app/*`. UX only: real
+- `middleware.ts` — Convex Auth's cookie/token plumbing. UX only: real
   authorization happens inside every Convex function via `getAuthUserId`.
+
+> **Demo mode, for now:** the login page is removed and `/app` signs visitors
+> in anonymously (`Anonymous` provider + `components/EnsureSignedIn.tsx`).
+> Magic-link/Google sign-in is still wired up server-side — restore
+> `app/login/` from git history, re-add the middleware redirects, and drop the
+> `Anonymous` provider to bring it back.

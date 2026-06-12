@@ -1,5 +1,6 @@
 import Google from "@auth/core/providers/google";
 import Resend from "@auth/core/providers/resend";
+import { Anonymous } from "@convex-dev/auth/providers/Anonymous";
 import { convexAuth } from "@convex-dev/auth/server";
 
 export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
@@ -13,5 +14,10 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       from: "LockIn <onboarding@resend.dev>",
     }),
     Google,
+    // Demo mode, for now: entering the app silently creates a throwaway
+    // user, so there is no login screen. Every function still derives its
+    // identity from auth context — only the sign-in ceremony is gone. Remove
+    // this (and restore the login page) before real users bring real data.
+    Anonymous,
   ],
 });

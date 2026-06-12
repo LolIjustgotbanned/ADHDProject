@@ -1,11 +1,11 @@
 import Link from "next/link";
 
-// The marketing landing — one screen, one job: route people to sign-up.
+// The marketing landing — one screen, one job: route people into the app.
 // A Server Component with no client or data dependencies of its own (the
 // route still renders per request: the auth provider in the root layout
-// reads cookies, which opts every route into dynamic rendering). Signed-in
-// visitors who click through land on /login, and the middleware bounces
-// them straight into /app.
+// reads cookies, which opts every route into dynamic rendering). Demo mode,
+// for now: both links go straight to /app, which signs visitors in
+// anonymously — no login page in between.
 const features = [
   {
     title: "Capture in two seconds",
@@ -27,10 +27,10 @@ export default function LandingPage() {
       <header className="mx-auto flex w-full max-w-3xl items-center justify-between px-6 py-5">
         <span className="font-medium tracking-tight">LockIn</span>
         <Link
-          href="/login"
+          href="/app"
           className="flex min-h-11 items-center text-sm text-muted transition hover:text-foreground"
         >
-          Sign in
+          Open the app
         </Link>
       </header>
 
@@ -43,7 +43,7 @@ export default function LandingPage() {
           planning your day, but for the moment a distraction shows up.
         </p>
         <Link
-          href="/login"
+          href="/app"
           className="mt-10 rounded-full bg-accent px-8 py-4 text-lg font-medium text-accent-foreground transition hover:opacity-90 active:scale-[0.99]"
         >
           Get started
