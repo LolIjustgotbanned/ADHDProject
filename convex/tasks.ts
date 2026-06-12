@@ -1,10 +1,10 @@
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query } from "./_generated/server";
 import { Doc } from "./_generated/dataModel";
 import {
   GAP,
   completeTaskWithSteps,
+  currentUserId,
   getOwnedTask,
   requireUserId,
   sectionTasks,
@@ -59,7 +59,7 @@ export const create = mutation({
 export const list = query({
   args: { status: anyStatus },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       // Signed-out transition: show an empty list rather than an error.
       return [];
@@ -194,7 +194,7 @@ export const addSubtask = mutation({
 export const listSubtasks = query({
   args: { parentId: v.id("tasks") },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       return [];
     }

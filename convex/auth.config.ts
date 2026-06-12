@@ -1,11 +1,12 @@
-// Tells the Convex deployment to trust the JWTs that Convex Auth itself
-// issues. CONVEX_SITE_URL is the deployment's own HTTP-actions URL — Convex
-// provides it automatically; it is never set by hand. "convex" matches the
-// audience claim stamped into those tokens.
+// Tells the Convex deployment to trust JWTs issued by our Clerk instance.
+// CLERK_JWT_ISSUER_DOMAIN is the Clerk Frontend API URL (per instance — dev
+// and prod deployments each point at their own Clerk instance via
+// `npx convex env set`). "convex" matches the name of the JWT template the
+// Clerk dashboard's Convex integration creates.
 export default {
   providers: [
     {
-      domain: process.env.CONVEX_SITE_URL,
+      domain: process.env.CLERK_JWT_ISSUER_DOMAIN,
       applicationID: "convex",
     },
   ],

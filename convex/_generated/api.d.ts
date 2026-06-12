@@ -8,10 +8,8 @@
  * @module
  */
 
-import type * as auth from "../auth.js";
 import type * as focus from "../focus.js";
 import type * as helpers from "../helpers.js";
-import type * as http from "../http.js";
 import type * as insights from "../insights.js";
 import type * as parked from "../parked.js";
 import type * as tasks from "../tasks.js";
@@ -24,10 +22,8 @@ import type {
 } from "convex/server";
 
 declare const fullApi: ApiFromModules<{
-  auth: typeof auth;
   focus: typeof focus;
   helpers: typeof helpers;
-  http: typeof http;
   insights: typeof insights;
   parked: typeof parked;
   tasks: typeof tasks;

@@ -1,14 +1,15 @@
-import { convexAuthNextjsMiddleware } from "@convex-dev/auth/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Demo mode, for now: no login page, so no redirects — visiting /app signs
-// you in anonymously on the client (see components/EnsureSignedIn.tsx). The
-// middleware itself must stay: it carries Convex Auth's cookie/token
-// plumbing that server components and the OAuth callback rely on. When real
-// sign-in returns, the signed-out /app -> /login redirect comes back here.
-export default convexAuthNextjsMiddleware(undefined, {
-  // Auth cookies are session-only by default (gone when the browser closes);
-  // 30 days keeps people signed in on their own devices.
-  cookieConfig: { maxAge: 60 * 60 * 24 * 30 },
+const isProtectedRoute = createRouteMatcher(["/app(.*)"]);
+
+// UX, not security: real authorization happens inside every Convex function
+// via the auth context (helpers.currentUserId). This just keeps signed-out
+// visitors from seeing an empty app shell — auth.protect() sends them to
+// the sign-in page (NEXT_PUBLIC_CLERK_SIGN_IN_URL → /login).
+export default clerkMiddleware(async (auth, request) => {
+  if (isProtectedRoute(request)) {
+    await auth.protect();
+  }
 });
 
 export const config = {

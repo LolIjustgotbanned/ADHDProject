@@ -1,10 +1,10 @@
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query, QueryCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import {
   GAP,
   completeTaskWithSteps,
+  currentUserId,
   getOwnedTask,
   requireUserId,
   sectionTasks,
@@ -29,7 +29,7 @@ async function activeSessionOf(ctx: QueryCtx, userId: Id<"users">) {
 export const getActiveSession = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       return null;
     }

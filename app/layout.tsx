@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
@@ -14,6 +13,15 @@ const geistMono = localFont({
   variable: "--font-geist-mono",
   weight: "100 900",
 });
+
+// Every route renders per request (as they always have — the old auth
+// provider read cookies, which forced the same thing; now this line does).
+// It also lets `next build` succeed without Clerk keys: static prerender
+// would execute ClerkProvider at build time and demand the publishable key.
+// When the key IS present at build, Next still inlines it into the client
+// bundle (NEXT_PUBLIC_* is build-time) — fine, it's publishable by design;
+// only CLERK_SECRET_KEY stays server-side.
+export const dynamic = "force-dynamic";
 
 export const viewport: Viewport = {
   themeColor: "#0b0d10",
@@ -34,16 +42,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // The server provider must wrap <html> (not sit inside it) so Server
-    // Components and middleware can share the auth token via cookies.
-    <ConvexAuthNextjsServerProvider>
-      <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
-        >
-          <ConvexClientProvider>{children}</ConvexClientProvider>
-        </body>
-      </html>
-    </ConvexAuthNextjsServerProvider>
+    // Clerk needs no server-side wrapper out here — ClerkProvider lives in
+    // ConvexClientProvider, and clerkMiddleware carries the session cookies.
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
+      >
+        <ConvexClientProvider>{children}</ConvexClientProvider>
+      </body>
+    </html>
   );
 }

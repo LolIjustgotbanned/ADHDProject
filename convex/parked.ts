@@ -1,8 +1,7 @@
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { mutation, query, MutationCtx } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
-import { GAP, requireUserId, sectionTasks } from "./helpers";
+import { GAP, currentUserId, requireUserId, sectionTasks } from "./helpers";
 
 // Parked thoughts: distractions captured mid-focus. Each one lands in the
 // inbox as a task immediately (one place to check, zero extra steps) and
@@ -63,7 +62,7 @@ export const parkThought = mutation({
 export const listParked = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       return [];
     }

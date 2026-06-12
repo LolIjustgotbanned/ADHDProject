@@ -1,16 +1,21 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
-import { authTables } from "@convex-dev/auth/server";
 
 export default defineSchema({
-  // Convex Auth stores its state (users, sessions, verification codes) as
-  // regular tables in OUR database — there is no external auth service.
-  // Spreading authTables in is required or auth deploys fail.
-  ...authTables,
+  // Identity lives in Clerk; this table is our mirror of it. One row per
+  // Clerk user, created by users.store on first sign-in. Keyed by the JWT's
+  // `subject` claim (the Clerk user id) — NOT tokenIdentifier, which embeds
+  // the issuer domain and would break if dev/prod Clerk instances change.
+  // Keeping a first-party users table means every other table can hold a
+  // real v.id("users") foreign key that Convex validates on write.
+  users: defineTable({
+    externalId: v.string(), // Clerk user id (JWT `subject`)
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
+    image: v.optional(v.string()),
+  }).index("by_external_id", ["externalId"]),
 
   tasks: defineTable({
-    // A real foreign key into Convex Auth's users table, not a plain string —
-    // Convex validates it on write and getAuthUserId() returns exactly this type.
     userId: v.id("users"),
     title: v.string(),
     status: v.union(

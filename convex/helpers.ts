@@ -1,4 +1,3 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { MutationCtx, QueryCtx } from "./_generated/server";
 import { Doc, Id } from "./_generated/dataModel";
 
@@ -14,10 +13,27 @@ export type TaskStatus = "inbox" | "active" | "done" | "interrupted";
 // the client hands us is checked for ownership before it is read or written.
 // Convex ids are not secrets — never rely on them being unguessable.
 
+// Resolves the validated Clerk JWT to our users row. Null means signed out —
+// OR signed in but users.store hasn't created the row yet (first sign-in
+// race); clients close that gap by gating the app UI on users.viewer.
+export async function currentUserId(
+  ctx: QueryCtx | MutationCtx
+): Promise<Id<"users"> | null> {
+  const identity = await ctx.auth.getUserIdentity();
+  if (identity === null) {
+    return null;
+  }
+  const user = await ctx.db
+    .query("users")
+    .withIndex("by_external_id", (q) => q.eq("externalId", identity.subject))
+    .unique();
+  return user === null ? null : user._id;
+}
+
 export async function requireUserId(
   ctx: QueryCtx | MutationCtx
 ): Promise<Id<"users">> {
-  const userId = await getAuthUserId(ctx);
+  const userId = await currentUserId(ctx);
   if (userId === null) {
     throw new Error("Not signed in");
   }

@@ -1,5 +1,5 @@
-import { getAuthUserId } from "@convex-dev/auth/server";
 import { query } from "./_generated/server";
+import { currentUserId } from "./helpers";
 
 // Insights: the numbers behind focus. Everything here is a read-only view
 // over history that focus.ts and parked.ts already recorded — no new state.
@@ -15,7 +15,7 @@ const WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 export const weeklyStats = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       // Signed-out transition: render nothing rather than an error.
       return null;
@@ -70,7 +70,7 @@ export const weeklyStats = query({
 export const focusLog = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await currentUserId(ctx);
     if (userId === null) {
       return [];
     }

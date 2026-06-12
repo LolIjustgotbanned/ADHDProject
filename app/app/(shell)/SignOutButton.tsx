@@ -1,18 +1,15 @@
 "use client";
 
-import { useAuthActions } from "@convex-dev/auth/react";
-import { useRouter } from "next/navigation";
+import { useClerk } from "@clerk/nextjs";
 
 export function SignOutButton() {
-  const { signOut } = useAuthActions();
-  const router = useRouter();
+  const { signOut } = useClerk();
 
   return (
     <button
-      // Demo mode: sessions are anonymous, so signing out abandons this
-      // user's data for good — re-entering the app mints a fresh user.
-      // Lands on the marketing page, the only place outside the app.
-      onClick={() => void signOut().then(() => router.push("/"))}
+      // Clerk handles the navigation after the session is cleared — no
+      // manual router dance, no race against anything re-signing-in.
+      onClick={() => void signOut({ redirectUrl: "/" })}
       className="text-sm text-muted transition hover:text-foreground"
     >
       Sign out
